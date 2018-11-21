@@ -23,7 +23,7 @@ function isValidMessage(message) {
     return false;
   }
 
-  if (content.indexOf('http') === -1) {
+  if (content.indexOf('http') !== -1) {
     return false;
   }
 
