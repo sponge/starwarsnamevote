@@ -133,6 +133,13 @@ async function main() {
     runOnInit: false
   });
 
+  new CronJob({
+    cronTime: '*/5 * * * *',
+    onTick: () => dumpState(Config.dataFile, state),
+    start: true,
+    runOnInit: false
+  });
+
   const app = express();
   app.use(express.json());
   app.use(express.static('public'))
