@@ -103,6 +103,7 @@ async function loadState(path) {
     state.scores = new Map(obj.scores);
     state.ignored = new Map(obj.ignored);
     state.lastMessage = obj.lastMessage;
+    scoreKeys = [...state.scores.keys()];
     console.log("loaded state from disk");
   } catch (e) {
     console.log("Couldn't load saved state, starting from scratch", e);
