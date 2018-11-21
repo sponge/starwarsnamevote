@@ -13,6 +13,21 @@ const state = {
   lastMessage: undefined
 };
 
+function isValidMessage(message) {
+  const content = message.cleanContent;
+
+  const words = content.split(' ').length;
+  if (words > 4 || content.length == 0) {
+    return false;
+  }
+
+  if (content.indexOf('http') === -1) {
+    return false;
+  }
+
+  return true;
+}
+
 async function grabAndDumpLogs() {
   const client = new Discord.Client();
 
@@ -44,11 +59,9 @@ async function grabAndDumpLogs() {
         if (state.scores.has(message[0])) {
           continue;
         }
-        const content = message[1].cleanContent;
 
-        const words = content.split(' ').length;
-        if (words > 4 || words == 0) {
-          continue;
+        if (!isValidMessage(message[1])) {
+          return;
         }
 
         const scoreObj = {id: message[1].id, name: message[1].cleanContent, author: message[1].author.username, link: message[1].url, score: 1500}
