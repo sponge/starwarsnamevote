@@ -66,7 +66,7 @@ async function grabAndDumpLogs() {
           continue;
         }
 
-        const scoreObj = {id: message[1].id, name: message[1].cleanContent, author: message[1].author.username, link: message[1].url, score: 1500}
+        const scoreObj = {id: message[1].id, name: message[1].cleanContent, author: message[1].author.username, link: message[1].url, score: 1500, wins: 0, losses: 0}
         state.scores.set(message[0], scoreObj)
       }
 
@@ -192,6 +192,18 @@ async function main() {
     const results = EloRating.calculate(winner.score, loser.score, true);
     winner.score = results.playerRating;
     loser.score = results.opponentRating;
+
+    if (!winner.wins) {
+      winner.wins = 1
+    } else {
+      winner.wins += 1;
+    }
+
+    if (!loser.losses) {
+      loser.losses = 1;
+    } else {
+      loser.losses += 1;
+    }
 
     res.send(JSON.stringify({
       match: getRandomMatch(),
