@@ -4,6 +4,7 @@ const CronJob = require('cron').CronJob;
 const fs = require('promise-fs');
 const express = require('express');
 const EloRating = require('elo-rating');
+const process = require('process');
 
 let scoreKeys = [];
 // make sure to update dump/load funcs if adding new stuff in here
@@ -84,10 +85,14 @@ async function grabAndDumpLogs() {
   client.login(Config.token);
 }
 
-async function dumpState(path, state) {
+async function dumpState(path, state, sync=false) {
   console.log("dumping scores to disk");
   const dumpObj = {scores: [...state.scores], ignored: [...state.ignored], lastMessage: state.lastMessage};
-  await fs.writeFile(path, JSON.stringify(dumpObj));
+  if (sync) {
+    fs.writeFileSync(path, JSON.stringify(dumpObj));
+  } else {
+    await fs.writeFile(path, JSON.stringify(dumpObj));
+  }
   console.log("wrote state to disk");
 }
 
@@ -114,6 +119,12 @@ function getRandomMatch() {
 async function main() {
   await loadState(Config.dataFile);
   await grabAndDumpLogs();
+
+  process.on('SIGINT', (code) => {
+    console.log('caught sigint, writing state to disk');
+    dumpState(Config.dataFile, state, sync=true);
+    process.exit()
+  });
 
   new CronJob({
     cronTime: '0 */1 * * *',
