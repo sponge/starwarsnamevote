@@ -23,10 +23,15 @@
         document.querySelector('.results .first.entry .name').textContent = o.results.first.name;
         document.querySelector('.results .first.entry .author').textContent = o.results.first.author;
         document.querySelector('.results .first.entry .score').textContent = o.results.first.score;
+        document.querySelector('.results .first.entry .wins').textContent = o.results.first.wins || 0;
+        document.querySelector('.results .first.entry .losses').textContent = o.results.first.losses || 0;
+
 
         document.querySelector('.results .second.entry .name').textContent = o.results.second.name;
         document.querySelector('.results .second.entry .author').textContent = o.results.second.author;
         document.querySelector('.results .second.entry .score').textContent = o.results.second.score;
+        document.querySelector('.results .second.entry .wins').textContent = o.results.second.wins || 0;
+        document.querySelector('.results .second.entry .losses').textContent = o.results.second.losses || 0;
       } else {
         document.querySelector('.results').classList.add('hidden');
       }
@@ -118,12 +123,16 @@
       <div class="first entry">
         <div class="name"></div>
         <div class="author"></div>
-        New Elo: <div class="score"></div>
+        <p>
+          <span class="wins"></span>W - <span class="losses"></span>L (<span class="score"></span>)
+        </p>
       </div>
       <div class="second entry">
         <div class="name"></div>
         <div class="author"></div>
-        New Elo: <div class="score"></div>
+        <p>
+          <span class="wins"></span>W - <span class="losses"></span>L (<span class="score"></span>)
+        </p>
       </div>
     </div>
   </div>
