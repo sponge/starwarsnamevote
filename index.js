@@ -5,6 +5,7 @@ const fs = require('promise-fs');
 const express = require('express');
 const EloRating = require('elo-rating');
 const process = require('process');
+const _ = require('lodash');
 
 let scoreKeys = [];
 // make sure to update dump/load funcs if adding new stuff in here
@@ -121,6 +122,20 @@ function getRandomMatch() {
   };
 }
 
+function getBestQuotes(number=10) {
+  const top = [...state.scores.values()].sort((a, b) => b.score - a.score);
+  return top.slice(0, number);
+}
+
+function getBestAuthors(number=100) {
+  const values = [...state.scores.values()];
+  const byAuthor = _.groupBy(values, 'author');
+  const stats = _.mapValues(byAuthor, items => { return {'avg': _.meanBy(items, 'score'), 'total': items.length} } );
+  _.forEach(stats, (value, key) => value.author = key)
+  const sortedStats = _.sortBy(stats, 'avg').reverse()
+  return sortedStats.slice(0, number);
+}
+
 async function main() {
   await loadState(Config.dataFile);
   await grabAndDumpLogs();
@@ -152,6 +167,13 @@ async function main() {
   app.get('/match', (req, res) => {
     res.type('application/json');
     res.send(JSON.stringify({match: getRandomMatch()}));
+  });
+
+  app.get('/top', (req, res) => {
+    res.type('application/json');
+    const top = getBestQuotes();
+    const authors = getBestAuthors();
+    res.send(JSON.stringify({top, authors}));
   });
 
   app.post('/vote', (req, res) => {   

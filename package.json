@@ -13,6 +13,7 @@
     "discord.js": "^11.3.2",
     "elo-rating": "^1.0.1",
     "express": "^4.16.4",
+    "lodash": "^4.17.11",
     "promise-fs": "^2.0.1"
   }
 }
