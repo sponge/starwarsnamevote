@@ -1,0 +1,130 @@
+
+<!doctype html>
+<head>
+  <meta charset="utf-8">
+  <title>Star Wars And Pickle Rick Name Kombat</title>
+  <meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1.0' />
+  <script type="text/javascript" defer>
+    function update(o) {
+      console.log('updating with', o);
+      document.querySelector('.matchup .first.entry .name').textContent = o.match.first.name;
+      document.querySelector('.matchup .first.entry .author').textContent = o.match.first.author;
+      document.querySelector('.matchup .first.entry button').setAttribute('winner', o.match.first.id);
+      document.querySelector('.matchup .first.entry button').setAttribute('loser', o.match.second.id);
+
+      document.querySelector('.matchup .second.entry .name').textContent = o.match.second.name;
+      document.querySelector('.matchup .second.entry .author').textContent = o.match.second.author;
+      document.querySelector('.matchup .second.entry button').setAttribute('winner', o.match.second.id);
+      document.querySelector('.matchup .second.entry button').setAttribute('loser', o.match.first.id);
+
+      if (o.results) {
+        document.querySelector('.results').classList.remove('hidden');
+
+        document.querySelector('.results .first.entry .name').textContent = o.results.first.name;
+        document.querySelector('.results .first.entry .author').textContent = o.results.first.author;
+        document.querySelector('.results .first.entry .score').textContent = o.results.first.score;
+
+        document.querySelector('.results .second.entry .name').textContent = o.results.second.name;
+        document.querySelector('.results .second.entry .author').textContent = o.results.second.author;
+        document.querySelector('.results .second.entry .score').textContent = o.results.second.score;
+      } else {
+        document.querySelector('.results').classList.add('hidden');
+      }
+
+      document.querySelector('.matchup').classList.remove('loading');
+    }
+
+    function vote(ev) {
+      const winner = this.getAttribute('winner');
+      const loser = this.getAttribute('loser');
+
+      fetch('/vote', {
+        method: "POST",
+        headers: { "Content-Type": "application/json; charset=utf-8" },
+        body: JSON.stringify({winner, loser})
+      })
+      .then(response => {
+        return response.json();
+      })
+      .then(o => {
+        console.log(o);
+        update(o);
+      })
+      .catch(error => {
+        console.error(error);
+        document.body.innerText = "fuck you've really done it now";
+      });
+    }
+    
+    function run() {
+      console.log("running");
+
+      document.querySelectorAll('.matchup .entry button').forEach(button => button.addEventListener('click', vote));
+
+      fetch('/match')
+      .then(response => {
+        return response.json();
+      })
+      .then(o => {
+        console.log(o);
+        update(o);
+      })
+      .catch(error => {
+        console.error(error);
+        document.body.innerText = "fuck you've really done it now";
+      });
+    }
+    document.addEventListener('DOMContentLoaded', run, false);
+  </script>
+  <style>
+    .matchup.loading button {
+      visibility: hidden;
+    }
+    
+    .results.hidden {
+      visibility: hidden;
+    }
+
+    .entries {
+      text-align: center;
+      display: flex;
+    }
+
+    .entry {
+      padding: 2em;
+    }
+  </style>
+</head>
+<body>
+  <h1>Star Wars And Pickle Rick Name Kombat</h1>
+  <div class="matchup loading">
+    <h2>Vote Now!</h2>
+    <div class="entries">
+      <div class="first entry">
+        <div class="name"></div>
+        <div class="author"></div>
+        <button>Vote</button>
+      </div>
+      <div class="second entry">
+        <div class="name"></div>
+        <div class="author"></div>
+        <button>Vote</button>
+      </div>
+    </div>
+  </div>
+  <div class="results hidden">
+    <h2>Last Match</h2>
+    <div class="entries">
+      <div class="first entry">
+        <div class="name"></div>
+        <div class="author"></div>
+        New Elo: <div class="score"></div>
+      </div>
+      <div class="second entry">
+        <div class="name"></div>
+        <div class="author"></div>
+        New Elo: <div class="score"></div>
+      </div>
+    </div>
+  </div>
+</body>
