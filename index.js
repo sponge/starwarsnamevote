@@ -62,7 +62,7 @@ async function grabAndDumpLogs() {
         }
 
         if (!isValidMessage(message[1])) {
-          return;
+          continue;
         }
 
         const scoreObj = {id: message[1].id, name: message[1].cleanContent, author: message[1].author.username, link: message[1].url, score: 1500}
@@ -71,6 +71,10 @@ async function grabAndDumpLogs() {
 
       totalMessages += messages.size;
       console.log(`downloaded messages ${totalMessages}`);
+
+      if (messages.size < 100) {
+        break;
+      }
     }
 
     if (localLastMessage !== undefined) {
