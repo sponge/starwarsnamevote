@@ -99,8 +99,19 @@
       padding: 2em;
     }
 
+    .entry .name {
+      font-size: 125%;
+      margin-bottom: 0.25em;
+    }
+
     .boards {
       display: flex;
+    }
+
+    button {
+      min-width: 200px;
+      min-height: 150px;
+      border-radius: 25px;
     }
   </style>
 </head>
@@ -110,14 +121,16 @@
     <h2>Vote Now!</h2>
     <div class="entries">
       <div class="first entry">
-        <div class="name"></div>
-        <div class="author"></div>
-        <button>Vote</button>
+        <button>
+          <div class="name"></div>
+          <div class="author"></div>
+        </button>
       </div>
       <div class="second entry">
-        <div class="name"></div>
-        <div class="author"></div>
-        <button>Vote</button>
+        <button>
+          <div class="name"></div>
+          <div class="author"></div>
+        </button>
       </div>
     </div>
   </div>
