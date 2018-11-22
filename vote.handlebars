@@ -82,6 +82,26 @@
     document.addEventListener('DOMContentLoaded', run, false);
   </script>
   <style>
+    body {
+      background-color: #043C66;
+      color: #9CE5F6;
+      font-family: sans-serif;
+      margin: 0 auto;
+      width: 800px;
+    }
+
+    h1, h2 {
+      text-align: center;
+    }
+
+    a {
+      color: #eee;
+    }
+
+    b {
+      color: #eee;
+    }
+
     .matchup.loading button {
       visibility: hidden;
     }
@@ -93,6 +113,7 @@
     .entries {
       text-align: center;
       display: flex;
+      justify-content: space-evenly;
     }
 
     .entry {
@@ -112,6 +133,12 @@
       min-width: 200px;
       min-height: 150px;
       border-radius: 25px;
+      background-color: #7EAFCD;
+      border: #11252C;
+    }
+
+    li {
+      margin-bottom: 0.5em;
     }
   </style>
 </head>
@@ -167,7 +194,7 @@
       <h2>Top Namers</h2> 
       <ol>
         {{#each authors}}
-          <li>{{this.author}}: average {{this.avg}}, total {{this.total}}</li>
+          <li><b>{{this.author}}</b>: average {{this.avg}}, total {{this.total}}</li>
         {{/each}}
       </ol>
     </section>
