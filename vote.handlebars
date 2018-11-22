@@ -23,15 +23,15 @@
         document.querySelector('.results .first.entry .name').textContent = o.results.first.name;
         document.querySelector('.results .first.entry .author').textContent = o.results.first.author;
         document.querySelector('.results .first.entry .score').textContent = o.results.first.score;
-        document.querySelector('.results .first.entry .wins').textContent = o.results.first.wins || 0;
-        document.querySelector('.results .first.entry .losses').textContent = o.results.first.losses || 0;
+        document.querySelector('.results .first.entry .wins').textContent = o.results.first.wins;
+        document.querySelector('.results .first.entry .losses').textContent = o.results.first.losses;
 
 
         document.querySelector('.results .second.entry .name').textContent = o.results.second.name;
         document.querySelector('.results .second.entry .author').textContent = o.results.second.author;
         document.querySelector('.results .second.entry .score').textContent = o.results.second.score;
-        document.querySelector('.results .second.entry .wins').textContent = o.results.second.wins || 0;
-        document.querySelector('.results .second.entry .losses').textContent = o.results.second.losses || 0;
+        document.querySelector('.results .second.entry .wins').textContent = o.results.second.wins;
+        document.querySelector('.results .second.entry .losses').textContent = o.results.second.losses;
       } else {
         document.querySelector('.results').classList.add('hidden');
       }
@@ -98,6 +98,10 @@
     .entry {
       padding: 2em;
     }
+
+    .boards {
+      display: flex;
+    }
   </style>
 </head>
 <body>
@@ -135,5 +139,24 @@
         </p>
       </div>
     </div>
+  </div>
+  <div class="boards">
+    <section>
+      <h2>Top Names</h2> 
+      <ol>
+        {{#each top}}
+          <li>{{this.score}}: "<a href="{{this.link}}">{{this.name}}</a>" by {{this.author}} ({{this.wins}}W - {{this.losses}}L)</li>
+        {{/each}}
+      </ol>
+    </section>
+
+    <section>
+      <h2>Top Namers</h2> 
+      <ol>
+        {{#each authors}}
+          <li>{{this.author}}: average {{this.avg}}, total {{this.total}}</li>
+        {{/each}}
+      </ol>
+    </section>
   </div>
 </body>

@@ -6,6 +6,7 @@ const express = require('express');
 const EloRating = require('elo-rating');
 const process = require('process');
 const _ = require('lodash');
+const handlebars = require('handlebars');
 
 let scoreKeys = [];
 // make sure to update dump/load funcs if adding new stuff in here
@@ -105,6 +106,18 @@ async function loadState(path) {
   try {
     const str = await fs.readFile(path);
     const obj = JSON.parse(str);
+
+    // port old data before i added wins/losses
+    for (let k in obj.scores) {
+      if (!obj.scores[k][1].wins) {
+        obj.scores[k][1].wins = 0;
+      }
+
+      if (!obj.scores[k][1].losses) {
+        obj.scores[k][1].losses = 0;
+      }
+    }
+
     state.scores = new Map(obj.scores);
     state.ignored = new Map(obj.ignored);
     state.lastMessage = obj.lastMessage;
@@ -130,7 +143,7 @@ function getBestQuotes(number=10) {
 function getBestAuthors(number=100) {
   const values = [...state.scores.values()];
   const byAuthor = _.groupBy(values, 'author');
-  const stats = _.mapValues(byAuthor, items => { return {'avg': _.meanBy(items, 'score'), 'total': items.length} } );
+  const stats = _.mapValues(byAuthor, items => { return {'avg': _.meanBy(items, 'score').toFixed(1), 'total': items.length} } );
   _.forEach(stats, (value, key) => value.author = key)
   const sortedStats = _.sortBy(stats, 'avg').reverse()
   return sortedStats.slice(0, number);
@@ -162,18 +175,19 @@ async function main() {
 
   const app = express();
   app.use(express.json());
-  app.use(express.static('public'))
+  
+  app.get('/', async (req, res) => {
+    const top = getBestQuotes();
+    const authors = getBestAuthors();
+
+    const src = await fs.readFile('./vote.handlebars');
+    const template = handlebars.compile(src.toString());
+    res.send(template({top, authors}));
+  });
 
   app.get('/match', (req, res) => {
     res.type('application/json');
     res.send(JSON.stringify({match: getRandomMatch()}));
-  });
-
-  app.get('/top', (req, res) => {
-    res.type('application/json');
-    const top = getBestQuotes();
-    const authors = getBestAuthors();
-    res.send(JSON.stringify({top, authors}));
   });
 
   app.post('/vote', (req, res) => {   
@@ -193,17 +207,8 @@ async function main() {
     winner.score = results.playerRating;
     loser.score = results.opponentRating;
 
-    if (!winner.wins) {
-      winner.wins = 1
-    } else {
-      winner.wins += 1;
-    }
-
-    if (!loser.losses) {
-      loser.losses = 1;
-    } else {
-      loser.losses += 1;
-    }
+    winner.wins += 1;
+    loser.losses += 1;
 
     res.send(JSON.stringify({
       match: getRandomMatch(),
