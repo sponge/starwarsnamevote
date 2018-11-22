@@ -4,6 +4,47 @@
   <meta charset="utf-8">
   <title>All Names</title>
   <meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1.0' />
+  <script type="text/javascript" defer>
+  function ignore(ev) {
+    const id = this.getAttribute('data-id');
+
+    fetch('/ignore', {
+      method: "POST",
+      headers: { "Content-Type": "application/json; charset=utf-8" },
+      body: JSON.stringify({id, ignore: true})
+    })
+    .then(response => {
+      window.location.reload();
+    })
+    .catch(error => {
+      console.error(error);
+      document.body.innerText = "fuck you've really done it now";
+    });
+  }
+
+  function unignore(ev) {
+    const id = this.getAttribute('data-id');
+
+    fetch('/ignore', {
+      method: "POST",
+      headers: { "Content-Type": "application/json; charset=utf-8" },
+      body: JSON.stringify({id, ignore: false})
+    })
+    .then(response => {
+      window.location.reload();
+    })
+    .catch(error => {
+      console.error(error);
+      document.body.innerText = "fuck you've really done it now";
+    });
+  }
+
+  function run() {
+    document.querySelectorAll('.ignore').forEach(button => button.addEventListener('click', ignore));
+    document.querySelectorAll('.unignore').forEach(button => button.addEventListener('click', unignore));
+  }
+  document.addEventListener('DOMContentLoaded', run, false);
+  </script>
   <style>
     body {
       background-color: #043C66;
@@ -60,6 +101,16 @@
       border: #11252C;
     }
 
+    button.ignore, button.unignore {
+      visibility: hidden;
+      min-width: auto;
+      min-height: auto;
+    }
+
+    li:hover button {
+      visibility: visible;
+    }
+
     ol {
       max-width: 800px;
     }
@@ -76,7 +127,18 @@
       <h2>Top Names</h2>
       <ol>
         {{#each top}}
-          <li>{{this.score}}: "<a href="{{this.link}}">{{this.name}}</a>" by {{this.author}} ({{this.wins}}W - {{this.losses}}L)</li>
+          <li>{{this.score}}: "<a href="{{this.link}}">{{this.name}}</a>" by {{this.author}} ({{this.wins}}W - {{this.losses}}L)
+          <button class="ignore" data-id="{{this.id}}">x</button>
+          </li>
+        {{/each}}
+      </ol>
+
+      <h2>Ignored Names</h2>
+      <ol>
+        {{#each ignored}}
+          <li>{{this.score}}: "<a href="{{this.link}}">{{this.name}}</a>" by {{this.author}} ({{this.wins}}W - {{this.losses}}L)
+          <button class="unignore" data-id="{{this.id}}">x</button>
+          </li>
         {{/each}}
       </ol>
     </section>

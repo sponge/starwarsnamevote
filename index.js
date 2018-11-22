@@ -16,15 +16,17 @@ const state = {
   lastMessage: undefined
 };
 
-function isValidMessage(message) {
-  const content = message.cleanContent;
-
+function isValidName(content) {
   const words = content.split(' ').length;
   if (words > 4 || content.length == 0) {
     return false;
   }
 
   if (content.indexOf('http') !== -1) {
+    return false;
+  }
+
+  if (content.indexOf('@') !== -1) {
     return false;
   }
 
@@ -63,7 +65,11 @@ async function grabAndDumpLogs() {
           continue;
         }
 
-        if (!isValidMessage(message[1])) {
+        if (state.ignored.has(message[0])) {
+          continue;
+        }
+
+        if (!isValidName(message[1].cleanContent)) {
           continue;
         }
 
@@ -106,19 +112,14 @@ async function loadState(path) {
   try {
     const str = await fs.readFile(path);
     const obj = JSON.parse(str);
+    state.scores = new Map(obj.scores);
 
-    // port old data before i added wins/losses
-    for (let k in obj.scores) {
-      if (!obj.scores[k][1].wins) {
-        obj.scores[k][1].wins = 0;
-      }
-
-      if (!obj.scores[k][1].losses) {
-        obj.scores[k][1].losses = 0;
+    for (let key of state.scores.keys()) {
+      if (!isValidName(state.scores.get(key).name)) {
+        state.scores.delete(key);
       }
     }
 
-    state.scores = new Map(obj.scores);
     state.ignored = new Map(obj.ignored);
     state.lastMessage = obj.lastMessage;
     scoreKeys = [...state.scores.keys()];
@@ -190,12 +191,39 @@ async function main() {
 
     const src = await fs.readFile('./all.handlebars');
     const template = handlebars.compile(src.toString());
-    res.send(template({top}));
+    res.send(template({top, ignored: [...state.ignored.values()]}));
   });
 
   app.get('/match', (req, res) => {
     res.type('application/json');
     res.send(JSON.stringify({match: getRandomMatch()}));
+  });
+
+  app.post('/ignore', (req, res) => {
+    res.type('application/json');
+
+    const id = req.body.id;
+    const ignore = req.body.ignore;
+
+    if (ignore === true) {
+      const name = state.scores.get(id);
+      if (name) {
+        state.ignored.set(id, name);
+        state.scores.delete(id);
+        res.send(JSON.stringify({success: true}));
+        return;
+      }
+    } else if (ignore === false) {
+      const name = state.ignored.get(id);
+      if (name) {
+        state.scores.set(id, name);
+        state.ignored.delete(id);
+        res.send(JSON.stringify({success: true}));
+        return;
+      }
+    }
+
+    res.send(JSON.stringify({success: false}));
   });
 
   app.post('/vote', (req, res) => {   
