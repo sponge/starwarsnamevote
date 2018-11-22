@@ -185,6 +185,14 @@ async function main() {
     res.send(template({top, authors}));
   });
 
+  app.get('/all', async (req, res) => {
+    const top = getBestQuotes(state.scores.size);
+
+    const src = await fs.readFile('./all.handlebars');
+    const template = handlebars.compile(src.toString());
+    res.send(template({top}));
+  });
+
   app.get('/match', (req, res) => {
     res.type('application/json');
     res.send(JSON.stringify({match: getRandomMatch()}));

@@ -1,0 +1,84 @@
+
+<!doctype html>
+<head>
+  <meta charset="utf-8">
+  <title>All Names</title>
+  <meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1.0' />
+  <style>
+    body {
+      background-color: #043C66;
+      color: #9CE5F6;
+      font-family: sans-serif;
+      margin: 0 auto;
+      width: 800px;
+    }
+
+    h1, h2 {
+      text-align: center;
+    }
+
+    a {
+      color: #eee;
+    }
+
+    b {
+      color: #eee;
+    }
+
+    .matchup.loading button {
+      visibility: hidden;
+    }
+    
+    .results.hidden {
+      visibility: hidden;
+    }
+
+    .entries {
+      text-align: center;
+      display: flex;
+      justify-content: space-evenly;
+    }
+
+    .entry {
+      padding: 2em;
+    }
+
+    .entry .name {
+      font-size: 125%;
+      margin-bottom: 0.25em;
+    }
+
+    .boards {
+      display: flex;
+    }
+
+    button {
+      min-width: 200px;
+      min-height: 150px;
+      border-radius: 25px;
+      background-color: #7EAFCD;
+      border: #11252C;
+    }
+
+    ol {
+      max-width: 800px;
+    }
+
+    li {
+      margin-bottom: 0.5em;
+    }
+  </style>
+</head>
+<body>
+  <h1>Star Wars And Pickle Rick Name Kombat</h1>
+  <div class="boards">
+    <section>
+      <h2>Top Names</h2>
+      <ol>
+        {{#each top}}
+          <li>{{this.score}}: "<a href="{{this.link}}">{{this.name}}</a>" by {{this.author}} ({{this.wins}}W - {{this.losses}}L)</li>
+        {{/each}}
+      </ol>
+    </section>
+  </div>
+</body>

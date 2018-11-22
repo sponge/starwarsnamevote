@@ -129,12 +129,20 @@
       display: flex;
     }
 
+    .boards section p {
+      text-align: center;
+    }
+
     button {
       min-width: 200px;
       min-height: 150px;
       border-radius: 25px;
       background-color: #7EAFCD;
       border: #11252C;
+    }
+
+    ol {
+      max-width: 800px;
     }
 
     li {
@@ -188,6 +196,7 @@
           <li>{{this.score}}: "<a href="{{this.link}}">{{this.name}}</a>" by {{this.author}} ({{this.wins}}W - {{this.losses}}L)</li>
         {{/each}}
       </ol>
+      <p><a href="/all">All Names</a></p>
     </section>
 
     <section>
