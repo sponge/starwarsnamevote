@@ -25,8 +25,8 @@ function isValidName(content) {
   const bad = ['http', '@', '<', '^'];
   for (let str of bad) {
     if (content.indexOf(str) !== -1) {
-    return false;
-  }
+      return false;
+    }
   }
 
   return true;
@@ -232,6 +232,7 @@ async function main() {
       if (name) {
         state.ignored.set(id, name);
         state.scores.delete(id);
+        scoreKeys = [...state.scores.keys()];
         res.send(JSON.stringify({success: true}));
         return;
       }
@@ -240,6 +241,7 @@ async function main() {
       if (name) {
         state.scores.set(id, name);
         state.ignored.delete(id);
+        scoreKeys = [...state.scores.keys()];
         res.send(JSON.stringify({success: true}));
         return;
       }
