@@ -300,6 +300,8 @@ async function main() {
     }
 
     const results = EloRating.calculate(winner.score, loser.score, true);
+    const winnerChange = results.playerRating - winner.score;
+    const loserChange = results.opponentRating - loser.score;
     winner.score = results.playerRating;
     loser.score = results.opponentRating;
 
@@ -308,7 +310,7 @@ async function main() {
 
     res.send(JSON.stringify({
       match: getCloseMatch(),
-      results: {first: winner, second: loser}
+      results: {first: winner, second: loser, winnerChange, loserChange}
     }));
   });
 
