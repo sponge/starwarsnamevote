@@ -129,11 +129,34 @@ async function loadState(path) {
   }
 }
 
+function getRandomName() {
+  return state.scores.get(scoreKeys[Math.floor(Math.random() * scoreKeys.length)]);
+}
+
 function getRandomMatch() {
   return {
-    first: state.scores.get(scoreKeys[Math.floor(Math.random() * scoreKeys.length)]),
-    second: state.scores.get(scoreKeys[Math.floor(Math.random() * scoreKeys.length)])
+    first: getRandomName(),
+    second: getRandomName()
   };
+}
+
+function getCloseMatch() {
+  const first = getRandomName();
+  const score = first.score;
+  const delta = 25;
+  const contenders = _.filter([...state.scores.values()], name => name.score >= score - delta && name.score <= score + delta && name.id !== first.id);
+
+  if (!contenders.length) {
+    return getRandomMatch();
+  }
+
+  const keys = contenders.keys();
+
+  return {
+    first,
+    second: contenders[Math.floor(Math.random() * contenders.length)]
+  };
+
 }
 
 function getBestQuotes(number=10) {
@@ -196,7 +219,7 @@ async function main() {
 
   app.get('/match', (req, res) => {
     res.type('application/json');
-    res.send(JSON.stringify({match: getRandomMatch()}));
+    res.send(JSON.stringify({match: getCloseMatch()}));
   });
 
   app.post('/ignore', (req, res) => {
@@ -233,7 +256,7 @@ async function main() {
     const loser = state.scores.get(req.body.loser);
     if (winner === undefined || loser === undefined) {
       res.send(JSON.stringify({
-        match: getRandomMatch(),
+        match: getCloseMatch(),
       }));
 
       return;
@@ -247,7 +270,7 @@ async function main() {
     loser.losses += 1;
 
     res.send(JSON.stringify({
-      match: getRandomMatch(),
+      match: getCloseMatch(),
       results: {first: winner, second: loser}
     }));
   });
