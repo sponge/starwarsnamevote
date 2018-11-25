@@ -22,12 +22,11 @@ function isValidName(content) {
     return false;
   }
 
-  if (content.indexOf('http') !== -1) {
+  const bad = ['http', '@', '<', '^'];
+  for (let str of bad) {
+    if (content.indexOf(str) !== -1) {
     return false;
   }
-
-  if (content.indexOf('@') !== -1) {
-    return false;
   }
 
   return true;
