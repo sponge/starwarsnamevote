@@ -166,9 +166,15 @@ function getBestQuotes(number=10) {
 function getBestAuthors(number=100) {
   const values = [...state.scores.values()];
   const byAuthor = _.groupBy(values, 'author');
-  const stats = _.mapValues(byAuthor, items => { return {'avg': _.meanBy(items, 'score').toFixed(1), 'total': items.length} } );
+  const stats = _.mapValues(byAuthor, items => {
+    const wins = _.sumBy(items, 'wins');
+    const losses = _.sumBy(items, 'losses');
+    const ratio = (wins / losses).toFixed(1);
+    return {wins, losses, ratio, 'total': items.length}
+  });
+
   _.forEach(stats, (value, key) => value.author = key)
-  const sortedStats = _.sortBy(stats, 'avg').reverse()
+  const sortedStats = _.sortBy(stats, 'ratio').reverse();
   return sortedStats.slice(0, number);
 }
 

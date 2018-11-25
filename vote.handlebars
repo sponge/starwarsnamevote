@@ -203,7 +203,7 @@
       <h2>Top Namers</h2> 
       <ol>
         {{#each authors}}
-          <li><b>{{this.author}}</b>: average {{this.avg}}, total {{this.total}}</li>
+          <li><b>{{this.author}}</b>: {{this.wins}}W - {{this.losses}}L ({{this.ratio}}), {{this.total}} names</li>
         {{/each}}
       </ol>
     </section>
