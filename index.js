@@ -18,10 +18,12 @@ const state = {
 
 function isValidName(content) {
   const words = content.split(' ').length;
+  // star wars names seem to never go past 4 words, or if empty
   if (words > 4 || content.length == 0) {
     return false;
   }
 
+  // basic substring check
   const bad = ['http', '@', '<', '^'];
   for (let str of bad) {
     if (content.indexOf(str) !== -1) {
@@ -29,7 +31,22 @@ function isValidName(content) {
     }
   }
 
+  // don't even bother with 1 word lowercase since it's probably us laughing
+  if (content[0].toLowerCase() === content[0] && words === 1) {
+    return false;
+  }
+
   return true;
+}
+
+// put the message into ignored for moderation queue purposes
+function isDefaultIgnoredName(content) {
+  // if the first letter is lowercase (and it's a valid name) it might be valid
+  if (content[0].toLowerCase() === content[0]) {
+    return true;
+  }
+
+  return false;
 }
 
 async function grabAndDumpLogs() {
@@ -73,7 +90,12 @@ async function grabAndDumpLogs() {
         }
 
         const scoreObj = {id: message[1].id, name: message[1].cleanContent, author: message[1].author.username, link: message[1].url, score: 1500, wins: 0, losses: 0}
-        state.scores.set(message[0], scoreObj)
+        
+        if (isDefaultIgnoredName(message[1].cleanContent)) {
+          state.ignored.set(message[0], scoreObj);
+        } else {
+          state.scores.set(message[0], scoreObj);
+        }
       }
 
       totalMessages += messages.size;
