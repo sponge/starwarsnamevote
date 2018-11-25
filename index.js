@@ -133,6 +133,7 @@ async function loadState(path) {
   try {
     const str = await fs.readFile(path);
     const obj = JSON.parse(str);
+    
     state.scores = new Map(obj.scores);
 
     for (let key of state.scores.keys()) {
@@ -142,6 +143,13 @@ async function loadState(path) {
     }
 
     state.ignored = new Map(obj.ignored);
+
+    for (let key of state.ignored.keys()) {
+      if (!isValidName(state.ignored.get(key).name)) {
+        state.ignored.delete(key);
+      }
+    }
+
     state.lastMessage = obj.lastMessage;
     scoreKeys = [...state.scores.keys()];
     console.log("loaded state from disk");
